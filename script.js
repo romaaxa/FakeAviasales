@@ -78,9 +78,23 @@ const handlerCity = (event, input, list) => {
   }
 };
 
-const renderCheap = (data, date) => {
-  const cheapTickets = JSON.parse(data).best_prices;
+const renderCheapDay = (cheapTicket) => {
+  console.log(cheapTicket);
+};
+
+const renderCheapYear = (cheapTickets) => {
   console.log(cheapTickets);
+};
+
+const renderCheap = (data, date) => {
+  const cheapTicketsYear = JSON.parse(data).best_prices;
+
+  const cheapTicketDay = cheapTicketsYear.filter((item) => {
+    return item.depart_date === date;
+  });
+
+  renderCheapDay(cheapTicketDay);
+  renderCheapYear(cheapTicketsYear);
 };
 
 
