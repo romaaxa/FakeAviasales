@@ -102,8 +102,10 @@ dropdownCitiesTo.addEventListener("click", (event) => {
 
 getData(proxy + citiesAPI, (data) => {
   city = JSON.parse(data).filter((item) => item.name);
-
-
+});
+getData(proxy + calendar + '?depart_date=2020-05-25&origin=SVX&destination=KGD&one_way=true&token=' + API_KEY, (data) => {
+  const cheapTicket = JSON.parse(data).best_prices.filter(item => item.depart_date === '2020-05-25');
+  console.log(cheapTicket);
 });
 
 //https://jsonplaceholder.typicode.com/todos/1
