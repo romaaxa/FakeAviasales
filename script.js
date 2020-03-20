@@ -5,8 +5,42 @@ const formSearch = document.querySelector(".form-search"), //search
   dropdownCitiesTo = document.querySelector(".dropdown__cities-to"), //list to
   inputDateDepart = document.querySelector(".input__date-depart"); //date
 
-const city = ["Minsk", "Grodno", "Warshaw", "Moscow", "London"];
 
+//main datas
+
+//http://api.travelpayouts.com/data/ru/cities.json
+const citiesAPI = 'http://api.travelpayouts.com/data/ru/cities.json',
+  proxy = 'https://cors-anywhere.herokuapp.com/'; //proxy to not blocking api
+
+let city = []; //to write cities into array
+
+//functions
+
+//get api data
+const getData = (url, callbackFoo) => {
+  const request = new XMLHttpRequest();
+
+  request.open('GET', url);//open data
+
+  request.addEventListener('readystatechange', () => {
+    if (request.readyState !== 4) return;
+
+    //requests from server
+    if (request.status === 200) {
+      callbackFoo(request.response);
+    } else {
+      console.error(request.status);
+    }
+  });
+
+  request.send();//send data
+};
+
+const callbackFoo = () => {
+
+};
+
+//show city in dynamic search fields
 const showCity = (input, list) => {
   list.textContent = ""; //clear input string every new symbol
 
@@ -15,15 +49,19 @@ const showCity = (input, list) => {
   } //unnecessary
   if (input.value !== "") {
     const cityFilter = city.filter(item => {
-      const fixItem = item.toLowerCase();
-      return fixItem.includes(input.value.toLowerCase());
+      if (item.name) {
+        const fixItem = item.name.toLowerCase();
+        return fixItem.includes(input.value.toLowerCase());
+      } else {
+
+      }
     });
 
     cityFilter.forEach(item => {
       const lielements = document.createElement("li"); //add element in dynamic searching
 
       lielements.classList.add("dropdown__city");
-      lielements.textContent = item;
+      lielements.textContent = item.name;
 
       list.append(lielements); //displaying
     });
@@ -37,6 +75,9 @@ const handlerCity = (event, input, list) => {
     list.textContent = "";
   }
 }
+
+
+//events
 
 inputCitiesFrom.addEventListener("input", () => {
   showCity(inputCitiesFrom, dropdownCitiesFrom);
@@ -53,3 +94,14 @@ inputCitiesTo.addEventListener("input", () => {
 dropdownCitiesTo.addEventListener("click", (event) => {
   handlerCity(event, inputCitiesTo, dropdownCitiesTo)
 });
+
+
+//function calls
+
+getData(proxy + citiesAPI, (data) => {
+  city = JSON.parse(data);
+
+
+});
+
+//https://jsonplaceholder.typicode.com/todos/1
