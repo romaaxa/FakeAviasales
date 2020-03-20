@@ -76,7 +76,12 @@ const handlerCity = (event, input, list) => {
     input.value = target.textContent;
     list.textContent = "";
   }
-}
+};
+
+const renderCheap = (data, date) => {
+  const cheapTickets = JSON.parse(data).best_prices;
+  console.log(cheapTickets);
+};
 
 
 //events
@@ -97,15 +102,47 @@ dropdownCitiesTo.addEventListener("click", (event) => {
   handlerCity(event, inputCitiesTo, dropdownCitiesTo)
 });
 
+formSearch.addEventListener('submit', (event) => {
+  event.preventDefault();
+
+  const cityFrom = city.find((item) => {
+    return inputCitiesFrom.value === item.name;
+  });
+  const cityTo = city.find((item) => {
+    return inputCitiesTo.value === item.name
+  });
+
+  const formData = {
+    from: cityFrom.code,
+    to: cityTo.code,
+    when: inputDateDepart.value,
+  };
+
+  if (formData.from === formData.to) {
+    alert("Identic cities cannot be chosen!");
+    return;
+  }
+
+  const requestData = '?depart_date=' +
+    formData.when + '&origin=' +
+    formData.from + '&destination=' +
+    formData.to + '&one_way=true&token=' + API_KEY;
+
+  getData(proxy + calendar + requestData, (response) => {
+    renderCheap(response, formData.when);
+  });
+});
 
 //function calls
 
 getData(proxy + citiesAPI, (data) => {
   city = JSON.parse(data).filter((item) => item.name);
 });
-getData(proxy + calendar + '?depart_date=2020-05-25&origin=SVX&destination=KGD&one_way=true&token=' + API_KEY, (data) => {
-  const cheapTicket = JSON.parse(data).best_prices.filter(item => item.depart_date === '2020-05-25');
-  console.log(cheapTicket);
-});
+
+
+
+// getData(proxy + calendar + '?depart_date=2020-05-25&origin=SVX&destination=KGD&one_way=true&token=' + API_KEY, (data) => {
+//   const cheapTicket = JSON.parse(data).best_prices.filter(item => item.depart_date === '2020-05-25');
+// });
 
 //https://jsonplaceholder.typicode.com/todos/1
