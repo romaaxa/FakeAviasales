@@ -10,7 +10,9 @@ const formSearch = document.querySelector(".form-search"), //search
 
 //http://api.travelpayouts.com/data/ru/cities.json
 const citiesAPI = 'http://api.travelpayouts.com/data/ru/cities.json',
-  proxy = 'https://cors-anywhere.herokuapp.com/'; //proxy to not blocking api
+  proxy = 'https://cors-anywhere.herokuapp.com/', //proxy to not blocking api
+  API_KEY = '2b2dffaf1eee1f0a1823fa188a8d2958', //token
+  calendar = 'http://min-prices.aviasales.ru/calendar_preload';//calendar
 
 let city = []; //to write cities into array
 
@@ -99,7 +101,7 @@ dropdownCitiesTo.addEventListener("click", (event) => {
 //function calls
 
 getData(proxy + citiesAPI, (data) => {
-  city = JSON.parse(data);
+  city = JSON.parse(data).filter((item) => item.name);
 
 
 });
