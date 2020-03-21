@@ -53,7 +53,7 @@ const showCity = (input, list) => {
     const cityFilter = city.filter(item => {
       if (item.name) {
         const fixItem = item.name.toLowerCase();
-        return fixItem.includes(input.value.toLowerCase());
+        return fixItem.startsWith(input.value.toLowerCase());   //includes -> startsWith (should start with current letter)
       } else {
 
       }
@@ -83,6 +83,18 @@ const renderCheapDay = (cheapTicket) => {
 };
 
 const renderCheapYear = (cheapTickets) => {
+
+  //sorting cheap tickets
+  cheapTickets.sort((a, b) => {
+    if (a.value > b.value) {
+      return 1;
+    }
+    if (a.value < b.value) {
+      return -1;
+    }
+    return 0;
+  });
+
   console.log(cheapTickets);
 };
 
@@ -127,30 +139,49 @@ formSearch.addEventListener('submit', (event) => {
   });
 
   const formData = {
-    from: cityFrom.code,
-    to: cityTo.code,
+    from: cityFrom,
+    to: cityTo,
     when: inputDateDepart.value,
   };
 
-  if (formData.from === formData.to) {
-    alert("Identic cities cannot be chosen!");
-    return;
+  //#region 
+  //if identic city names -> alert && return 0;
+  // if (formData.from === formData.to) {
+  //   alert("Identic cities cannot be chosen!");
+  //   return;
+  // }
+  //#endregion
+
+
+  if (formData.from && formData.to) {
+    const requestData = '?depart_date=' +
+      formData.when + '&origin=' +
+      formData.from.code + '&destination=' +
+      formData.to.code + '&one_way=true&token=' + API_KEY;
+
+    getData(proxy + calendar + requestData, (response) => {
+      renderCheap(response, formData.when);
+    });
+  } else {
+    alert('Input correct city name!');
   }
-
-  const requestData = '?depart_date=' +
-    formData.when + '&origin=' +
-    formData.from + '&destination=' +
-    formData.to + '&one_way=true&token=' + API_KEY;
-
-  getData(proxy + calendar + requestData, (response) => {
-    renderCheap(response, formData.when);
-  });
 });
 
 //function calls
 
 getData(proxy + citiesAPI, (data) => {
   city = JSON.parse(data).filter((item) => item.name);
+
+  //sorting cities
+  city.sort((a, b) => {
+    if (a.name > b.name) {
+      return 1;
+    }
+    if (a.name < b.name) {
+      return -1;
+    }
+    return 0;
+  });
 });
 
 
