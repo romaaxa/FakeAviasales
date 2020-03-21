@@ -14,30 +14,35 @@ const formSearch = document.querySelector(".form-search"), //search
 const citiesAPI = 'http://api.travelpayouts.com/data/ru/cities.json',
   proxy = 'https://cors-anywhere.herokuapp.com/', //proxy to not blocking api
   API_KEY = '2b2dffaf1eee1f0a1823fa188a8d2958', //token
-  calendar = 'http://min-prices.aviasales.ru/calendar_preload';//calendar
+  calendar = 'http://min-prices.aviasales.ru/calendar_preload',//calendar
+  MAX_COUNT = 10;
 
 let city = []; //to write cities into array
 
 //functions
 
 //get api data
-const getData = (url, callbackFoo) => {
-  const request = new XMLHttpRequest();
+const getData = (url, callbackFoo, reject = console.error) => {
+  try {
+    const request = new XMLHttpRequest();
 
-  request.open('GET', url);//open data
+    request.open('GET', url);//open data
 
-  request.addEventListener('readystatechange', () => {
-    if (request.readyState !== 4) return;
+    request.addEventListener('readystatechange', () => {
+      if (request.readyState !== 4) return;
 
-    //requests from server
-    if (request.status === 200) {
-      callbackFoo(request.response);
-    } else {
-      console.error(request.status);
-    }
-  });
+      //requests from server
+      if (request.status === 200) {
+        callbackFoo(request.response);
+      } else {
+        reject(request.status);
+      }
+    });
 
-  request.send();//send data
+    request.send();
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 const callbackFoo = () => {
@@ -103,6 +108,29 @@ const getChanges = (num) => {
   }
 };
 
+
+const getLinkAviasales = (data) => {
+  let link = 'https://www.aviasales.ru/search/';
+
+  link += data.origin;
+
+  const date = new Date(data.depart_date);
+
+  const day = date.getDate();
+  link += day < 10 ? '0' + day : day; //0 before day < 10
+
+  const month = date.getMonth() + 1;
+  link += month < 10 ? '0' + month : month;//0 before month < 10
+  link += data.destination;
+
+  link += 1;
+
+  return link;
+
+  //full link example
+  //https://www.aviasales.ru/search/SVX2905KGD1
+}
+
 //creating card
 const createCard = (data) => {
   const ticket = document.createElement('article');
@@ -115,7 +143,7 @@ const createCard = (data) => {
     <h3 class="agent">${data.gate}</h3>
     <div class="ticket__wrapper">
 	<div class="left-side">
-		<a href="https://www.aviasales.ru/search/SVX2905KGD1" class="button button__buy">Price ${data.value}₽</a>
+		<a href="${getLinkAviasales(data)}" class="button button__buy" target="_blank">Price ${data.value}₽</a>
 	</div>
 	<div class="right-side">
 		<div class="block-left">
@@ -166,6 +194,11 @@ const renderCheapYear = (cheapTickets) => {
     return 0;
   });
 
+  for (let i = 0; i < cheapTickets.length && i < MAX_COUNT; i++) {
+    const ticket = createCard(cheapTickets[i]);
+    otherCheapTickets.append(ticket);
+  }
+
   console.log(cheapTickets);
 };
 
@@ -202,6 +235,8 @@ dropdownCitiesTo.addEventListener("click", (event) => {
 formSearch.addEventListener('submit', (event) => {
   event.preventDefault();
 
+  //debugger; //to debug
+
   const cityFrom = city.find((item) => {
     return inputCitiesFrom.value === item.name;
   });
@@ -223,6 +258,9 @@ formSearch.addEventListener('submit', (event) => {
 
     getData(proxy + calendar + requestData, (response) => {
       renderCheap(response, formData.when);
+    }, error => {
+      alert('There are no flying on this way!');
+      console.log('Error catched: ', error);
     });
   } else {
     alert('Input correct city name!');
