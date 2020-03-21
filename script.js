@@ -80,9 +80,20 @@ const handlerCity = (event, input, list) => {
   }
 };
 
-const getDate = () => {
-
+const getNameCity = (code) => {
+  const objCity = city.find((item) => item.code === code);
+  return objCity.name;
 };
+
+const getDate = (date) => {
+  return new Date(date).toLocaleString('ru', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
 
 const getChanges = (num) => {
   if (num) {
@@ -109,14 +120,14 @@ const createCard = (data) => {
 	<div class="right-side">
 		<div class="block-left">
 			<div class="city__from">Flying from
-				<span class="city__name">${data.origin}</span>
-			</div>${data.depart_date}</div>
+				<span class="city__name">${getNameCity(data.origin)}</span>
+			</div>${getDate(data.depart_date)}</div>
 		</div>
 
 		<div class="block-right">
 			<div class="changes">${getChanges(data.number_of_changes)}</div>
 			<div class="city__to">City destination:
-				<span class="city__name">${data.destination}</span>
+				<span class="city__name">${getNameCity(data.destination)}</span>
 			</div>
 		</div>
 	</div>
@@ -132,13 +143,18 @@ const createCard = (data) => {
 };
 
 const renderCheapDay = (cheapTicket) => {
+  cheapestTicket.style.display = 'block';
+  cheapestTicket.innerHTML = '<h2>The most cheapest tickets on current date</h2>';
+
+
   const ticket = createCard(cheapTicket[0]); //creating by...
 
   cheapestTicket.append(ticket);
 };
 
 const renderCheapYear = (cheapTickets) => {
-
+  otherCheapTickets.style.display = 'block';
+  otherCheapTickets.innerHTML = '<h2>The most cheapest tickets on other dates</h2>';
   //sorting cheap tickets
   cheapTickets.sort((a, b) => {
     if (a.value > b.value) {
@@ -198,15 +214,6 @@ formSearch.addEventListener('submit', (event) => {
     to: cityTo,
     when: inputDateDepart.value,
   };
-
-  //#region 
-  //if identic city names -> alert && return 0;
-  // if (formData.from === formData.to) {
-  //   alert("Identic cities cannot be chosen!");
-  //   return;
-  // }
-  //#endregion
-
 
   if (formData.from && formData.to) {
     const requestData = '?depart_date=' +
