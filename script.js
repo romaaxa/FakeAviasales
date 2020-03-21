@@ -10,7 +10,6 @@ const formSearch = document.querySelector(".form-search"), //search
 
 //main datas
 
-//http://api.travelpayouts.com/data/ru/cities.json
 const citiesAPI = 'http://api.travelpayouts.com/data/ru/cities.json',
   proxy = 'https://cors-anywhere.herokuapp.com/', //proxy to not blocking api
   API_KEY = '2b2dffaf1eee1f0a1823fa188a8d2958', //token
@@ -126,9 +125,6 @@ const getLinkAviasales = (data) => {
   link += 1;
 
   return link;
-
-  //full link example
-  //https://www.aviasales.ru/search/SVX2905KGD1
 }
 
 //creating card
@@ -235,8 +231,6 @@ dropdownCitiesTo.addEventListener("click", (event) => {
 formSearch.addEventListener('submit', (event) => {
   event.preventDefault();
 
-  //debugger; //to debug
-
   const cityFrom = city.find((item) => {
     return inputCitiesFrom.value === item.name;
   });
@@ -283,11 +277,3 @@ getData(proxy + citiesAPI, (data) => {
     return 0;
   });
 });
-
-
-
-// getData(proxy + calendar + '?depart_date=2020-05-25&origin=SVX&destination=KGD&one_way=true&token=' + API_KEY, (data) => {
-//   const cheapTicket = JSON.parse(data).best_prices.filter(item => item.depart_date === '2020-05-25');
-// });
-
-//https://jsonplaceholder.typicode.com/todos/1
