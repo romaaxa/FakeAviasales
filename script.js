@@ -3,7 +3,9 @@ const formSearch = document.querySelector(".form-search"), //search
   dropdownCitiesFrom = document.querySelector(".dropdown__cities-from"), //list from
   inputCitiesTo = document.querySelector(".input__cities-to"), //to
   dropdownCitiesTo = document.querySelector(".dropdown__cities-to"), //list to
-  inputDateDepart = document.querySelector(".input__date-depart"); //date
+  inputDateDepart = document.querySelector(".input__date-depart"), //date
+  cheapestTicket = document.getElementById('cheapest-ticket'), //not in form, so getElementById exept of querySelector
+  otherCheapTickets = document.getElementById('other-cheap-tickets');
 
 
 //main datas
@@ -78,8 +80,61 @@ const handlerCity = (event, input, list) => {
   }
 };
 
+const getDate = () => {
+
+};
+
+const getChanges = (num) => {
+  if (num) {
+    return num === 1 ? 'With one stop' : 'With two stops';
+  } else {
+    return 'Without stopping';
+  }
+};
+
+//creating card
+const createCard = (data) => {
+  const ticket = document.createElement('article');
+  ticket.classList.add('ticket');
+
+  let deep = '';
+
+  if (data) {
+    deep = `
+    <h3 class="agent">${data.gate}</h3>
+    <div class="ticket__wrapper">
+	<div class="left-side">
+		<a href="https://www.aviasales.ru/search/SVX2905KGD1" class="button button__buy">Price ${data.value}₽</a>
+	</div>
+	<div class="right-side">
+		<div class="block-left">
+			<div class="city__from">Flying from
+				<span class="city__name">${data.origin}</span>
+			</div>${data.depart_date}</div>
+		</div>
+
+		<div class="block-right">
+			<div class="changes">${getChanges(data.number_of_changes)}</div>
+			<div class="city__to">City destination:
+				<span class="city__name">${data.destination}</span>
+			</div>
+		</div>
+	</div>
+</div>
+    `;
+  } else {
+    deep = '<h3>There are no tickets on the current date!</h3>'
+  }
+
+  ticket.insertAdjacentHTML('afterbegin', deep);
+
+  return ticket;
+};
+
 const renderCheapDay = (cheapTicket) => {
-  console.log(cheapTicket);
+  const ticket = createCard(cheapTicket[0]); //creating by...
+
+  cheapestTicket.append(ticket);
 };
 
 const renderCheapYear = (cheapTickets) => {
